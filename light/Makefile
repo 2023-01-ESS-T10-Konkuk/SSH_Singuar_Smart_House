@@ -7,6 +7,9 @@ PWD := $(shell pwd)
 default:
 		$(MAKE) -C $(KDIR) M=$(PWD) $(ARM) modules
 		arm-linux-gnueabi-gcc simple_light_app.c -o simple_light_app
+debug:
+		$(MAKE) EXTRA_CFLAGS=-DLIGHT_DEBUG -C $(KDIR) M=$(PWD) $(ARM) modules
+		arm-linux-gnueabi-gcc simple_light_app.c -o simple_light_app
 clean:
 		$(MAKE) -C $(KDIR) M=$(PWD) $(ARM) clean
 		rm simple_light_app

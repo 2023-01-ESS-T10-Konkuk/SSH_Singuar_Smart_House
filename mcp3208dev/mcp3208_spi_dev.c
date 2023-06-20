@@ -36,6 +36,7 @@ struct spi_board_info etx_spi_device_info =
 static dev_t dev_num;
 static struct cdev *cd_cdev;
 
+// read analog value from MCP3208
 static int mcp3208_read_value(int channel) {
     u8 tbuf[3], rbuf[3];
     int value = 0;
