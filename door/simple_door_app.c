@@ -7,12 +7,14 @@
 #include <time.h>
 
 #include "simple_door.h"
+#include "alert_mod.h"
 
 int door_fd, alert_fd;
 
 time_t timer;
 struct tm *t;
 
+// print the current time
 void print_current_time() {
 	t = localtime(&timer);
 	char msg[100] = {0, };

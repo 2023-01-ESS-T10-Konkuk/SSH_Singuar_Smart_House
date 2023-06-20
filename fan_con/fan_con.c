@@ -14,6 +14,13 @@
 
 MODULE_LICENSE("GPL");
 
+#ifdef MY_DEBUG
+	#define DEBUG_MSG(fmt, args...)\
+		printk(KERN_DEBUG "fan_con: " fmt, ##args);
+#else
+	#define DEBUG_MSG(fmt, args...)
+#endif
+
 #define MAX_TIMING 85
 #define DHT11 20
 #define FAN 21
@@ -58,9 +65,11 @@ static int dht11_read(void) {
 			break;
 		}
 		
+		// Ignore first 3 transitions
 		if( (i >= 4) && (i % 2 == 0) ) {
 			dht11_data[j/8] <<= 1;
-			
+
+			// Shove each bit into the storage bytes
 			if(counter > 16) {
 				dht11_data[j / 8] |= 1;
 			}
@@ -69,8 +78,10 @@ static int dht11_read(void) {
 		}
 	}
 	
+	// Verify checksum
 	if( (j >= 40) && (dht11_data[4] == ( (dht11_data[0] + dht11_data[1] + dht11_data[2] + dht11_data[3]) & 0xFF) ) ) {
-		printk("Humidity: %d.%d Temperature = %d.%d C\n" , dht11_data[0] , dht11_data[1] , dht11_data[2] , dht11_data[3]);
+		// Valid data, return it
+		DEBUG_MSG("Humidity: %d.%d Temperature = %d.%d C\n" , dht11_data[0] , dht11_data[1] , dht11_data[2] , dht11_data[3]);
 		
 		if(dht11_data[0] > 40) {				
 			activation = 1;
@@ -80,19 +91,19 @@ static int dht11_read(void) {
 		}
 	}
 	else {
-		printk("Data not good, skip\n");
+		DEBUG_MSG("Data not good, skip\n");
 	}
-	
+	// Invalid data, return prevous activation
 	return activation;
 }
 
 static int fan_con_open(struct inode *inode, struct file *file) {
-	printk("fan_con: open\n");
+	DEBUG_MSG("open\n");
 	return 0;
 }
 
 static int fan_con_release(struct inode *inode, struct file *file) {
-	printk("fan_con: release\n");
+	DEBUG_MSG("release\n");
 	return 0;
 }
 
@@ -125,7 +136,7 @@ static int __init fan_con_init(void) {
 	gpio_request_one(FAN, GPIOF_OUT_INIT_LOW, "FAN");
 	gpio_request_one(DHT11, GPIOF_IN, "DHT11");
     
-	printk("fan_con: Init Module\n");
+	DEBUG_MSG("Init Module\n");
 
     alloc_chrdev_region(&dev_num, 0, 1, DEV_NAME);
 	cd_cdev = cdev_alloc();
@@ -136,7 +147,7 @@ static int __init fan_con_init(void) {
 }
 
 static void __exit fan_con_exit(void) {
-	printk("fan_con: exit modeul\n");
+	DEBUG_MSG("exit modeul\n");
 	
 	gpio_set_value(DHT11, 0);
 	gpio_set_value(FAN, 0);

@@ -20,7 +20,7 @@
 #define LED 17
 #define DEV_NAME "gas_dev"
 
-
+// Device variables and data structures
 static dev_t dev_num;
 static struct cdev *cd_cdev;
 
@@ -30,6 +30,7 @@ wait_queue_head_t my_wq;
 
 static int irq_num;
 
+// IRQ handler for gas sensor interrupt
 static irqreturn_t mq9_irq_isr(int irq, void* dev_id) {
     unsigned long flags;
     DEBUG_MSG("GAS DETECT Wake up all\n");
@@ -41,6 +42,7 @@ static irqreturn_t mq9_irq_isr(int irq, void* dev_id) {
     return IRQ_HANDLED;
 }
 
+// IOCTL function for gas device
 static long gas_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
     int ret;
 

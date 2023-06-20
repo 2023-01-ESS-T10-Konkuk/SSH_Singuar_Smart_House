@@ -66,12 +66,12 @@ void forward(int round, int delay) {
 }
 
 static int simple_motor_open(struct inode *inode, struct file *file) {
-	printk("motor: open\n");
+	DEBUG_MSG("motor: open\n");
 	return 0;
 }
 
 static int simple_motor_release(struct inode *inode, struct file *file) {
-	printk("motor: release\n");
+	DEBUG_MSG("motor: release\n");
 	return 0;
 }
 
@@ -105,7 +105,7 @@ static int __init simple_motor_init(void) {
 	gpio_request_one(PIN3, GPIOF_OUT_INIT_LOW, "p3");
 	gpio_request_one(PIN4, GPIOF_OUT_INIT_LOW, "p4");
 
-	printk("motor: module init, GPIOs set.\n");
+	DEBUG_MSG("motor: module init, GPIOs set.\n");
 	alloc_chrdev_region(&dev_num, 0, 1, DEV_NAME);
 	cd_cdev = cdev_alloc();
 	cdev_init(cd_cdev, &simple_mioctl_fops);
@@ -119,7 +119,7 @@ static void __exit simple_motor_exit(void) {
 	gpio_free(PIN3);
 	gpio_free(PIN4);
 
-	printk("motor: module exit, GPIOs free.\n");
+	DEBUG_MSG("motor: module exit, GPIOs free.\n");
 	cdev_del(cd_cdev);
 	unregister_chrdev_region(dev_num, 1);
 }
